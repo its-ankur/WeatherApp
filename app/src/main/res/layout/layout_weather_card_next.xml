@@ -126,7 +126,7 @@
                     android:layout_height="34dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/app_name"
-                    android:src="@drawable/wind" />
+                    android:src="@drawable/winds" />
 
                 <TextView
                     android:id="@+id/textWind"

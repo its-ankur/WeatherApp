@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weatherapp.R;
 import com.example.weatherapp.entities.City;
-import com.example.weatherapp.entities.WeatherResponse;
 
 import java.util.List;
 
@@ -83,9 +82,9 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         }
 
         // Example method to get drawable resource ID from weather icon name
-        private int getWeatherIconResId(String weatherIcon) {
-            switch (weatherIcon) {
-                case "01d": return R.drawable.sunny;
+        public static int getWeatherIconResId(String icon) {
+            switch (icon) {
+                case "01d": return R.drawable.sun;
                 case "01n": return R.drawable.clear_night;
                 case "02d": return R.drawable.cloudy_sunny;
                 case "02n": return R.drawable.clear_night;
@@ -94,15 +93,15 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
                 case "04d":
                 case "04n": return R.drawable.cloudy;
                 case "09d":
-                case "09n": return R.drawable.rainy;
-                case "10d": return R.drawable.rainy;
-                case "10n": return R.drawable.rainy;
+                case "09n": return R.drawable.rainy2;
+                case "10d": return R.drawable.rainy2;
+                case "10n": return R.drawable.rainy2;
                 case "11d":
                 case "11n": return R.drawable.storm;
                 case "13d":
                 case "13n": return R.drawable.snowy;
                 case "50d":
-                case "50n": return R.drawable.windy;
+                case "50n": return R.drawable.wind;
                 default: return R.drawable.wind; // Provide a default image if needed
             }
         }

@@ -73,7 +73,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:textAlignment="center"
-                android:textColor="@color/textColor"
+                android:textColor="@color/white"
                 android:textSize="20sp"
                 android:visibility="gone" />
 
@@ -84,7 +84,7 @@
                 android:layout_marginTop="10dp"
                 android:includeFontPadding="false"
                 android:textAlignment="center"
-                android:textColor="@color/textColor"
+                android:textColor="@color/white"
                 android:textSize="19sp" />
 
             <ImageView
@@ -102,7 +102,7 @@
                 android:layout_marginTop="16dp"
                 android:includeFontPadding="false"
                 android:textAlignment="center"
-                android:textColor="@color/textColor"
+                android:textColor="@color/white"
                 android:textSize="19sp" />
 
             <TextView
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:textAlignment="center"
-                android:textColor="@color/textColor"
+                android:textColor="@color/white"
                 android:textSize="63sp"
                 android:textStyle="bold" />
 

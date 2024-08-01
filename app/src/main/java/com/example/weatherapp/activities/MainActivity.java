@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -23,6 +24,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -38,6 +40,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.weatherapp.R;
 import com.example.weatherapp.adapters.FutureAdapter;
 import com.example.weatherapp.adapters.HourlyAdapter;
+import com.example.weatherapp.entities.City;
 import com.example.weatherapp.entities.FutureDomain;
 import com.example.weatherapp.entities.Hourly;
 import com.example.weatherapp.update.UpdateUI;
@@ -75,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgIconWeather, menuButton;
     private EditText editTextSearch;
 
+    private ConstraintLayout constraintLayout;
+
     private long pressBackTime;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         EdgeToEdge.enable(this);
@@ -173,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        editor.clear();
+        editor.remove("CityName");
         editor.apply();
         Log.d("CityName","value destroyed "+nameCity);
     }
@@ -303,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
         textWindSpeed = findViewById(R.id.textWindSpeed);
         textFeelsLike = findViewById(R.id.textFeelsLike);
         menuButton=findViewById(R.id.menu_button);
+        constraintLayout=findViewById(R.id.main);
     }
 
 
@@ -372,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("CityName",response);
                         JSONObject jsonObject = new JSONObject(response);
                         parseWeatherResponse(jsonObject);
+                        saveCitiesToPreferences(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -584,13 +592,81 @@ public class MainActivity extends AppCompatActivity {
                     textPercentHumidity,
                     textWindSpeed,
                     textFeelsLike,
-                    imgIconWeather
+                    imgIconWeather,
+                    constraintLayout
             );
 
             updateUI.updateWeather();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void saveCitiesToPreferences(JSONObject jsonObject) {
+        try {
+            // Retrieve existing data
+            String existingData = sharedPreferences.getString("savedCities", "[]"); // Default to empty JSON array if not found
+            JSONArray jsonArray = new JSONArray(existingData); // Parse existing data into JSONArray
+
+            // Create a new JSON object with the new city data
+            JSONObject json = new JSONObject();
+            String cityName = jsonObject.getString("name"); // Adjust if needed
+            JSONObject sys = jsonObject.getJSONObject("sys");
+            Long sunrise = sys.getLong("sunrise");
+            Long sunset = sys.getLong("sunset");
+
+            // Extract other weather data
+            JSONObject main = jsonObject.getJSONObject("main");
+            String temp = main.getString("temp");
+            String humidity = main.getString("humidity");
+            JSONArray weatherArray = jsonObject.getJSONArray("weather");
+            JSONObject weather = weatherArray.getJSONObject(0);
+            String status = weather.getString("description");
+            String icon = weather.getString("icon");
+
+            // Put data into the new JSON object
+            json.put("name", cityName);
+            json.put("temperature", temp);
+            json.put("description", status);
+            json.put("humidity", humidity);
+            json.put("icon", icon);
+            json.put("sunrise", convertUnixTimeToReadableFormat(sunrise));
+            json.put("sunset", convertUnixTimeToReadableFormat(sunset));
+
+            // Check if the city already exists in the array
+            boolean cityExists = false;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject existingCity = jsonArray.getJSONObject(i);
+                if (existingCity.getString("name").equals(cityName)) {
+                    cityExists = true;
+                    break;
+                }
+            }
+
+            // Add new city only if it does not already exist
+            if (!cityExists) {
+                jsonArray.put(json);
+                Log.d("Shared", "City added: " + jsonArray);
+            } else {
+                Log.d("Shared", "City already exists: " + cityName);
+            }
+
+            // Save updated JSON array to shared preferences
+            editor.putString("savedCities", jsonArray.toString());
+            editor.apply();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d("Shared", "error : " + e);
+        }
+    }
+
+
+    private String convertUnixTimeToReadableFormat(long unixTime) {
+        java.util.Date date = new java.util.Date(unixTime * 1000L); // Convert seconds to milliseconds
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("hh:mm a"); // Customize format as needed
+        return sdf.format(date);
     }
 
     private void parseHourlyData(JSONObject jsonObject) {

@@ -3,6 +3,7 @@ package com.example.weatherapp.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -51,7 +52,7 @@ public class SavedCitiesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activities_saved_cities);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         editTextSearch = findViewById(R.id.editTextSearch);
         backButton=findViewById(R.id.back_button);
         searchButton = findViewById(R.id.search_button);

@@ -26,7 +26,7 @@
         android:layout_height="45dp"
         android:layout_marginStart="10dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/sunny"
+        android:src="@drawable/sun"
         app:layout_constraintBottom_toBottomOf="@+id/textDay"
         app:layout_constraintStart_toEndOf="@+id/textDay"
         app:layout_constraintTop_toTopOf="@+id/textDay" />
